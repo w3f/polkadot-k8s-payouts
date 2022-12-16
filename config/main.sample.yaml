@@ -9,7 +9,7 @@ deepCheck:
   enabled: false
 claim:
   enabled: false
-  batchSize: 9
+  batchSize: 5
   gracePeriod:
     enabled: false
     eras: 4
