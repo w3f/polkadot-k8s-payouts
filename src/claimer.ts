@@ -110,18 +110,28 @@ export class Claimer {
 
     private async gatherUnclaimedInfo(validatorAddress: string, validatorInfo: ValidatorInfo): Promise<number[]> {
 
+      const ledger = (await this.api.derive.staking.account(validatorAddress)).stakingLedger
+      if (!ledger) {
+          throw new Error(`Could not get ledger for ${validatorAddress}`);
+      }
+
       const lastReward = validatorInfo.lastReward
   
       const numOfPotentialUnclaimedPayouts = this.currentEraIndex - lastReward - 1;
       const unclaimedPayouts: number[] = []
+      const claimedRewards: number[] = ledger.claimedRewards.map(x => x.toNumber());
+
       for ( let i = 1; i <= numOfPotentialUnclaimedPayouts; i++) {
         const idx = lastReward + i;
+        if (claimedRewards.includes(idx)) {
+            continue;
+        }
         const exposure = await this.api.query.staking.erasStakers(idx, validatorAddress);
         if (exposure.total.toBn().gt(new BN(0))) {
           unclaimedPayouts.push(idx)
         }
       }
-      validatorInfo.unclaimedPayouts=unclaimedPayouts
+      validatorInfo.unclaimedPayouts = unclaimedPayouts
   
       return unclaimedPayouts    
     }
