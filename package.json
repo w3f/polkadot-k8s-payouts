@@ -20,7 +20,7 @@
     "start": "NODE_OPTIONS='--max-old-space-size=4096' node ./dist/index.js start"
   },
   "dependencies": {
-    "@polkadot/api": "^9.6.1",
+    "@polkadot/api": "^10.1.2",
     "@w3f/config": "^0.1.1",
     "@w3f/logger": "^0.4.3",
     "async-wait-until": "^1.2.6",
