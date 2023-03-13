@@ -6,10 +6,17 @@ image:
 
 config:
   logLevel: info
-  wsEndpoint: "wss://rpc.polkadot.io/"
-  targets:
-  - alias: ALESSIO
-    validatorAddress: "16cdSZUq7kxq6mtoVMWmYXo62FnNGT9jzWjVRUg87CpL9pxP"
+  wsEndpoint: "wss://kusama-rpc.polkadot.io/"
+  # targetsFromGit: #optional
+  #   enabled: false
+  #   targets:
+  #   - platform: GitHub1kv
+  #     private:
+  #       enabled: false
+  #       apiToken: xxx
+  #     network: kusama
+  #     url: https://github.com/w3f/1k-validators-be/raw/master/helmfile.d/config/kusama/otv-backend-prod.yaml.gotmpl
+  targets: [] #optional
   deepCheck: 
     enabled: false
   claim:
@@ -31,9 +38,9 @@ resources:
   requests:
     cpu: "10m"
     memory: "50Mi"
-  limits:
-    cpu: "150m"
-    memory: "150Mi" 
+  # limits:
+  #   cpu: "150m"
+  #   memory: "150Mi" 
 
 cronjob:
   schedule: "0 12 */2 * *"

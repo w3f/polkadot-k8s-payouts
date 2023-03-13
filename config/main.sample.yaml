@@ -1,6 +1,21 @@
 logLevel: info
 wsEndpoint: "wss://kusama-rpc.polkadot.io/"
-targets:
+targetsFromGit: #optional
+  enabled: false
+  targets:
+  - platform: GitHub1kv
+    private:
+      enabled: false
+      apiToken: xxx
+    network: kusama
+    url: https://github.com/w3f/1k-validators-be/raw/master/helmfile.d/config/kusama/otv-backend-prod.yaml.gotmpl
+  - platform: GitLab
+    private:
+      enabled: false
+      apiToken: xxx
+    network: kusama
+    url: https://your.gitlab.domain/api/v4/projects/number/repository/files/accounts.yaml/raw?ref=main  
+targets: #optional  
 - alias: validator-000
     validatorAddress: "<validator-000-stash-address>"
 - alias: validator-001

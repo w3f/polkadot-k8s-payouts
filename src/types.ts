@@ -9,7 +9,7 @@ export interface Target {
 }
 
 export interface ClaimerInputConfig {
-    targets: Array<Target>;
+    targets?: Array<Target>;
     deepCheck: {
       enabled: boolean;
     };
@@ -18,6 +18,18 @@ export interface ClaimerInputConfig {
       gracePeriod: GracePeriod;
       batchSize: number;
       claimerKeystore: Keystore;
+    };
+    targetsFromGit?: {
+      enabled: boolean;
+      targets: Array<{
+        platform: string;
+        private: {
+            enabled: boolean;
+            apiToken: string;
+        };
+        network?: string;
+        url: string;
+      }>;
     };
 }
 

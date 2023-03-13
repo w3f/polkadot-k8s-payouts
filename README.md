@@ -62,3 +62,10 @@ validatorAddress: "<validator-001-stash-address>"
 
 # Optional - Deep Check
 This is an optional parameter you can add to force a scan starting from the last 84 era, rather then relying on the onchain account ledger information. Keep it disabled for normal operations.
+
+
+# Optional - Validators from Git
+
+The list of target addresses can be dynamically retrieved (app startup/restart) from a Git file. Check the [GitConfigLoader](src/gitConfigLoader) implementation.  
+
+- [GitLab API](https://docs.gitlab.com/ee/api/repository_files.html)
