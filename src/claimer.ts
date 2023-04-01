@@ -144,6 +144,7 @@ export class Claimer {
       this.logger.info(`${claimPool.length} claims to be processed`)
 
       let currentTxDone = true
+      let totClaimed = 0
       while (claimPool.length > 0) {
           
           const payoutCalls = [];
@@ -182,12 +183,13 @@ export class Claimer {
               for (const candidate of candidates) {
                 validatorsMap.get(candidate.address).claimedPayouts.push(candidate.eraIndex)
               }
+              totClaimed += candidates.length
               this.logger.info(`Claimed...`);
           } catch (error) {
               this.logger.info(`tx failed: ${error}`);
           }
       }
-      this.logger.info(`Claimed ${claimPool.length} payouts`);
+      this.logger.info(`Claimed ${totClaimed} payouts`);
     }
 
 }
