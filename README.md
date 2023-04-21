@@ -6,7 +6,7 @@ Tool that automatically claims your Kusama/Polkadot validator rewards.
 Deployable in a Kubernetes cluster as a cronjob (helm chart).  
 Forked from https://github.com/ironoa/polkadot-k8s-payouts
 
-
+fgf
 # How it works - Local
 
 You can start by cloning the repo and installiing the dependencies, NodeJS and Yarn are required:
@@ -69,3 +69,5 @@ This is an optional parameter you can add to force a scan starting from the last
 The list of target addresses can be dynamically retrieved (app startup/restart) from a Git file. Check the [GitConfigLoader](src/gitConfigLoader) implementation.  
 
 - [GitLab API](https://docs.gitlab.com/ee/api/repository_files.html)
+
+fg
