@@ -28,9 +28,13 @@ export class Claimer {
     async run(): Promise<void> {
         await this.initInstanceVariables()
 
+        //filter targets
+        this.logger.info("filtering targets...")
+        await this.filterTargets()
+
         //gather info
         console.time('build validators map');
-        this.logger.info("gathering chain data...")
+        this.logger.info(`gathering chain data for ${this.targets.size} targets...`)
         const validatorsMap = await this.gatherValidatorsMap(Array.from(this.targets))
         console.timeEnd('build validators map');
 
@@ -59,6 +63,16 @@ export class Claimer {
       this.currentEraIndex = await getActiveEraIndex(this.api);
       this.lastRewardMax = Number(this.api.consts.staking.historyDepth?.toString())
       if(!this.lastRewardMax) this.lastRewardMax = 84 //Polkadot runtime is not ready for this call
+    }
+
+    private async filterTargets(): Promise<void> {
+      const bonded = await this.api.query.staking.bonded.multi(Array.from(this.targets).map(target=>target.validatorAddress))
+      Array.from(this.targets).forEach((target,index) => {
+        if(!bonded[index].isSome){
+          this.logger.warn(`${target.alias} (${target.validatorAddress}) cannot be processed, it's not bonded`)
+          this.targets.delete(target)
+        }
+      })
     }
     
     private async gatherValidatorsMap(accounts: Target[]): Promise<ValidatorsMap> {
