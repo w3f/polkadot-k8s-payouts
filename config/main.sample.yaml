@@ -8,7 +8,7 @@ targetsFromGit: #optional
       enabled: false
       apiToken: xxx
     network: kusama
-    url: https://github.com/w3f/1k-validators-be/raw/master/helmfile.d/config/kusama/otv-backend-prod.yaml.gotmpl
+    url: https://raw.githubusercontent.com/w3f/1k-validators-be/master/candidates/kusama.json
   - platform: GitLab
     private:
       enabled: false

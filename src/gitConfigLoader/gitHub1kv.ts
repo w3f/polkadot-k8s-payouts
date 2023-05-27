@@ -12,10 +12,9 @@ export class GitHub1kv implements GitConfigLoader {
 
   async downloadAndLoad(): Promise<Array<Target>> {
     const response = await fetch(this.url);
-    let data = await response.text();
+    let data = await response.json();
     // based on the shape of https://github.com/w3f/1k-validators-be/blob/master/helmfile.d/config/kusama/otv-backend-prod.yaml.gotmpl
-    data = data.replace(/{{.*}}/gm, '')
-    const candidates: Array<TargetFromGit1kv> = JSON.parse(parse(data)["config"])["scorekeeper"]["candidates"]
+    const candidates: Array<TargetFromGit1kv> = data.candidates
 
     return candidates.map(c=>{
       const target: Target = {
