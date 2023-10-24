@@ -1,7 +1,7 @@
 import { ClaimerInputConfig, Target, GracePeriod, ValidatorInfo, ValidatorsMap, ClaimPool } from './types';
 import { getActiveEraIndex, initKey } from './utils';
 import { Logger, LoggerSingleton } from './logger';
-import { ApiPromise } from '@polkadot/api';
+import { ApiPromise, Keyring } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import waitUntil from 'async-wait-until';
 import { BN } from 'bn.js';
@@ -76,6 +76,14 @@ export class Claimer {
           this.logger.warn(`${target.alias} (${target.validatorAddress}) cannot be processed, it's not bonded`)
           this.targets.delete(target)
         }
+      })
+
+      const chain = (await this.api.rpc.system.chain()).toHuman()
+      const keyring = new Keyring();
+      chain.toLowerCase() == "kusama" ? keyring.setSS58Format(2) : keyring.setSS58Format(0) //0 Polkadot, 2 Kusama
+      Array.from(this.targets).forEach((target,index) => {
+        const keypair = keyring.addFromAddress(target.validatorAddress)
+        target.validatorAddress = keypair.address //conversion
       })
     }
     
