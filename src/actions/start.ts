@@ -5,6 +5,7 @@ import { InputConfig, Target } from '../types';
 import { LoggerSingleton } from '../logger';
 import { Claimer } from '../claimer';
 import { GitConfigLoaderFactory } from '../gitConfigLoader/gitConfigLoaderFactory';
+import { runAttempts } from '../constants';
 
 const _loadConfig = async (config: any): Promise<InputConfig> =>{
     const cfg = new Config<InputConfig>().parse(config);
@@ -38,8 +39,18 @@ export async function startAction(cmd): Promise<void> {
     const claimer = new Claimer(cfg, api);
 
     try {
-        await claimer.run();
-        process.exit(0);
+        let leftAttemts = runAttempts
+        let isSuccess = false
+        while(leftAttemts > 0 && !isSuccess){
+            logger.info(`run is starting, ${leftAttemts} attempts left...`)
+            isSuccess = await claimer.run()
+            leftAttemts--;
+        }
+
+        if(isSuccess)
+            process.exit(0)
+        else
+            throw new Error("out of attempts")
     } catch (e) {
         logger.error(`During claimer run: ${e.toString()}`);
         process.exit(-1);

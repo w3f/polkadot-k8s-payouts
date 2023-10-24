@@ -5,7 +5,7 @@ import { ApiPromise } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import waitUntil from 'async-wait-until';
 import { BN } from 'bn.js';
-import { batchSize, gracePeriod, isDeepCheckEnabled } from './constants';
+import { batchSize, claimAttempts, gracePeriod, isDeepCheckEnabled } from './constants';
 
 export class Claimer {
     private isDeepCheckEnabled = isDeepCheckEnabled
@@ -16,6 +16,8 @@ export class Claimer {
     private currentEraIndex: number;
     private lastRewardMax: number;
 
+    private isFullSuccess = true;
+
     constructor(
         private readonly cfg: ClaimerInputConfig,
         private readonly api: ApiPromise) {
@@ -25,7 +27,7 @@ export class Claimer {
         this.batchSize = cfg.claim.batchSize
     }
 
-    async run(): Promise<void> {
+    async run(): Promise<boolean> {
         await this.initInstanceVariables()
 
         //filter targets
@@ -57,6 +59,8 @@ export class Claimer {
           validatorInfo.claimedPayouts.length>0 ? this.logger.info(`Claimed Payouts: ${validatorInfo.claimedPayouts.toString()}`) : {}
           this.logger.info(`**********`)
         }
+
+        return this.isFullSuccess;
     }
 
     private async initInstanceVariables(): Promise<void>{
@@ -159,7 +163,8 @@ export class Claimer {
 
       let currentTxDone = true
       let totClaimed = 0
-      while (claimPool.length > 0) {
+      let leftAttempts = claimAttempts;
+      while (claimPool.length > 0 && leftAttempts > 0) {
           
           const payoutCalls = [];
           const candidates = claimPool.slice(0,this.batchSize) //end not included
@@ -174,12 +179,26 @@ export class Claimer {
               if (payoutCalls.length > 0) {
                 const unsub = await this.api.tx.utility
                     .batchAll(payoutCalls)
-                    .signAndSend(keyPair, result => {
-                      // console.log(`Current status is ${result.status}`);
-                      if (result.status.isInBlock) {
-                        // console.log(`Transaction included at blockHash ${result.status.asInBlock}`);
-                      } else if (result.status.isFinalized) {
-                        // console.log(`Transaction finalized at blockHash ${result.status.asFinalized}`);
+                    .signAndSend(keyPair, ({ status, events, dispatchError }) => {
+                      if (dispatchError) {
+                        let error = ""
+                        if (dispatchError.isModule) {
+                          // for module errors, we have the section indexed, lookup
+                          const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                          const { docs, name, section } = decoded;
+                  
+                          error = `${section}.${name}: ${docs.join(' ')}`
+                        } else {
+                          // Other, CannotLookup, BadOrigin, no extra info
+                          error = dispatchError.toString()
+                        }
+                        throw new Error(error);
+                      } 
+                      
+                      if (status.isInBlock) {
+                        // console.log(`Transaction included at blockHash ${status.asInBlock}`);
+                      } else if (status.isFinalized) {
+                        // console.log(`Transaction finalized at blockHash ${status.asFinalized}`);
                         currentTxDone = true
                         unsub();
                       }
@@ -189,8 +208,11 @@ export class Claimer {
                 currentTxDone = true
               }
           } catch (e) {
-              this.logger.error(`Could not perform one of the claims: ${e}`);
+              this.logger.error(`Could not perform one of the claims...: ${e}`);
+              this.isFullSuccess = false;
+              return
           }
+
           try {
               await waitUntil(() => currentTxDone, 60000, 500);
               claimPool.splice(0,candidates.length)
@@ -200,7 +222,9 @@ export class Claimer {
               totClaimed += candidates.length
               this.logger.info(`Claimed...`);
           } catch (error) {
-              this.logger.info(`tx failed: ${error}`);
+              this.logger.error(`tx failed: ${error}`);
+              this.isFullSuccess = false;   
+              leftAttempts--
           }
       }
       this.logger.info(`Claimed ${totClaimed} payouts`);
