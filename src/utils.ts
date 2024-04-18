@@ -23,7 +23,7 @@ export const getActiveEraIndex = async (api: ApiPromise): Promise<number> => {
   return (await api.query.staking.activeEra()).toJSON()['index']; 
 }
 
-export const initKey = (keystoreFilePath: string, passwordFilePath): KeyringPair =>{
+export const initKey = (keystoreFilePath: string, passwordFilePath): any =>{ //should be KeyringPair but it is not compiling
   const keyring = new Keyring({ type: 'sr25519' });
   const keyJson = JSON.parse(fs.readFileSync(keystoreFilePath, { encoding: 'utf-8' })) as KeyringPair$Json;
   const passwordContent = fs.readFileSync(passwordFilePath, { encoding: 'utf-8' });

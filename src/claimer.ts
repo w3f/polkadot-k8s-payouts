@@ -44,7 +44,7 @@ export class Claimer {
         console.time('claim');
         if(this.cfg.claim.enabled) {
           this.logger.info(`Processing claims...`)
-          const keyPair = initKey(this.cfg.claim.claimerKeystore.filePath,this.cfg.claim.claimerKeystore.passwordPath);
+          const keyPair: KeyringPair = initKey(this.cfg.claim.claimerKeystore.filePath,this.cfg.claim.claimerKeystore.passwordPath);
 
           const claimPool = await this.buildClaimPool(validatorsMap)
           await this.claim(keyPair,claimPool,validatorsMap)
