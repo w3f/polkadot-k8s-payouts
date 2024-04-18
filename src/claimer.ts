@@ -124,10 +124,10 @@ export class Claimer {
           throw new Error(`Could not get ledger for ${validatorAddress}`);
       }
       let lastReward: number;
-      if ( ledger.claimedRewards.length == 0 ) {
+      if ( ledger.legacyClaimedRewards.length == 0 ) {
           lastReward = this.lastRewardMax
       } else {
-          lastReward = ledger.claimedRewards.pop().toNumber();
+          lastReward = ledger.legacyClaimedRewards.pop().toNumber();
       }
   
       return lastReward
