@@ -12,7 +12,7 @@ jobs:
 
   yarnLint:
     docker:
-      - image: web3f/node-dind:v1
+      - image: web3f/node-dind:v3
     steps:
       - checkout
       - run: yarn
