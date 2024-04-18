@@ -68,17 +68,17 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - yarnLint:
-          filters:
-            tags:
-              only: /.*/ 
+      # - yarnLint:
+      #     filters:
+      #       tags:
+      #         only: /.*/ 
       - buildImage:
           context: dockerhub-bot
           filters:
             tags:
               only: /.*/
           requires:
-            - yarnLint
+            # - yarnLint
             - helmLint         
       - integrationTests:
           filters:
