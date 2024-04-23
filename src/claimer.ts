@@ -86,14 +86,14 @@ export class Claimer {
         target.validatorAddress = keypair.address //conversion
       })
     }
-    
+
     private async gatherValidatorsMap(accounts: Target[]): Promise<ValidatorsMap> {
 
       const validatorsMap: ValidatorsMap = new Map<string,ValidatorInfo>()
       accounts.forEach(account=>{
         validatorsMap.set(account.validatorAddress,{lastReward:null,alias:account.alias,unclaimedPayouts:[],claimedPayouts:[]})
       })
-  
+
       const validators = (await this.api.derive.staking.accounts(accounts.map(account=>account.validatorAddress),{withLedger:true})).filter(validator=>validatorsMap.has(validator.accountId.toHuman()))
 
       for (const validator of validators) {
@@ -101,16 +101,16 @@ export class Claimer {
         const ledger = validator.stakingLedger
         if (!ledger) {
           throw new Error(`Could not get ledger for ${key}`);
-        }      
+        }
         const lastReward: number = await this.getLastReward(key)
         validatorsMap.set(key,{...validatorsMap.get(key),lastReward})
-        
+
       }
-  
+
       for (const [address, validatorInfo] of validatorsMap) {
         await this.gatherUnclaimedInfo(address,validatorInfo)
       }
-  
+
       return validatorsMap
     }
 
@@ -129,7 +129,7 @@ export class Claimer {
       } else {
           lastReward = ledger.legacyClaimedRewards.pop().toNumber();
       }
-  
+
       return lastReward
     }
 
@@ -137,19 +137,23 @@ export class Claimer {
     private async gatherUnclaimedInfo(validatorAddress: string, validatorInfo: ValidatorInfo): Promise<number[]> {
 
       const lastReward = validatorInfo.lastReward
-  
+
       const numOfPotentialUnclaimedPayouts = this.currentEraIndex - lastReward - 1;
       const unclaimedPayouts: number[] = []
       for ( let i = 1; i <= numOfPotentialUnclaimedPayouts; i++) {
-        const idx = lastReward + i;
-        const exposure = await this.api.query.staking.erasStakers(idx, validatorAddress);
-        if (exposure.total.toBn().gt(new BN(0))) {
+        const idx = this.currentEraIndex - i;
+        const claimed = await this.api.query.staking.claimedRewards(idx, validatorAddress);
+        const exposure = await this.api.query.staking.erasValidatorPrefs(idx, validatorAddress);
+        if (claimed[0] !== undefined) {
+          break
+        }
+        if (exposure.commission.toBn().gt(new BN(0))) {
           unclaimedPayouts.push(idx)
         }
       }
       validatorInfo.unclaimedPayouts=unclaimedPayouts
-  
-      return unclaimedPayouts    
+
+      return unclaimedPayouts
     }
 
     private async buildClaimPool(validatorsMap: ValidatorsMap): Promise<ClaimPool[]> {
@@ -173,7 +177,7 @@ export class Claimer {
       let totClaimed = 0
       let leftAttempts = claimAttempts;
       while (claimPool.length > 0 && leftAttempts > 0) {
-          
+
           const payoutCalls = [];
           const candidates = claimPool.slice(0,this.batchSize) //end not included
 
@@ -194,15 +198,15 @@ export class Claimer {
                           // for module errors, we have the section indexed, lookup
                           const decoded = this.api.registry.findMetaError(dispatchError.asModule);
                           const { docs, name, section } = decoded;
-                  
+
                           error = `${section}.${name}: ${docs.join(' ')}`
                         } else {
                           // Other, CannotLookup, BadOrigin, no extra info
                           error = dispatchError.toString()
                         }
                         throw new Error(error);
-                      } 
-                      
+                      }
+
                       if (status.isInBlock) {
                         // console.log(`Transaction included at blockHash ${status.asInBlock}`);
                       } else if (status.isFinalized) {
@@ -231,7 +235,7 @@ export class Claimer {
               this.logger.info(`Claimed...`);
           } catch (error) {
               this.logger.error(`tx failed: ${error}`);
-              this.isFullSuccess = false;   
+              this.isFullSuccess = false;
               leftAttempts--
           }
       }
