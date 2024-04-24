@@ -154,7 +154,17 @@ export class Claimer {
 
       //bugFix: https://github.com/polkadot-js/api/issues/5859
       //temporary solution
-      const unclaimedFixed = unclaimed.filter(x=>x>6513)
+      const chainName = (await this.api.rpc.system.chain()).toString().toLowerCase()
+      const unclaimedFixed = unclaimed.filter(x => {
+        switch (chainName) {
+          case "kusama":
+            return x>6513
+          case "polkadot":
+            return x>1419  
+          default:
+            return true
+        }
+      })
 
       validatorInfo.unclaimedPayouts=unclaimedFixed
       return unclaimedFixed    
