@@ -1,11 +1,12 @@
 import { ClaimerInputConfig, Target, GracePeriod, ValidatorInfo, ValidatorsMap, ClaimPool } from './types';
-import { getActiveEraIndex, initKey } from './utils';
+import { getActiveEraIndex, initKey, setDifference } from './utils';
 import { Logger, LoggerSingleton } from './logger';
 import { ApiPromise, Keyring } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import waitUntil from 'async-wait-until';
 import { BN } from 'bn.js';
 import { batchSize, claimAttempts, gracePeriod, isDeepCheckEnabled } from './constants';
+import { DeriveOwnExposure } from '@polkadot/api-derive/types';
 
 export class Claimer {
     private isDeepCheckEnabled = isDeepCheckEnabled
@@ -135,21 +136,38 @@ export class Claimer {
 
 
     private async gatherUnclaimedInfo(validatorAddress: string, validatorInfo: ValidatorInfo): Promise<number[]> {
+      
+      const ownRewardsIdx: Set<number> = new Set<number>
+      const exposure: DeriveOwnExposure[] = await this.api.derive.staking.ownExposures(validatorAddress)
+      exposure.forEach(e=>{
+        if(e.exposure.total.toBn().gt(new BN(0))) ownRewardsIdx.add(e.era.toNumber()) //legacy
+        if(e.exposureMeta?.value.total?.toBn().gt(new BN(0))) ownRewardsIdx.add(e.era.toNumber()) //new
+      })
 
-      const lastReward = validatorInfo.lastReward
-  
-      const numOfPotentialUnclaimedPayouts = this.currentEraIndex - lastReward - 1;
-      const unclaimedPayouts: number[] = []
-      for ( let i = 1; i <= numOfPotentialUnclaimedPayouts; i++) {
-        const idx = lastReward + i;
-        const exposure = await this.api.query.staking.erasStakers(idx, validatorAddress);
-        if (exposure.total.toBn().gt(new BN(0))) {
-          unclaimedPayouts.push(idx)
+      const claimedIdx: Set<number> = new Set<number>
+      const stakingQuery = await this.api.derive.staking.query(validatorAddress,{withLedger:true, withClaimedRewardsEras: true})
+      stakingQuery.stakingLedger.legacyClaimedRewards.forEach(r=>claimedIdx.add(r.toNumber()))
+      stakingQuery.claimedRewardsEras.forEach(r=>claimedIdx.add(r.toNumber()))
+
+      const unclaimed: number[] = Array.from(setDifference(ownRewardsIdx,claimedIdx))
+      this.logger.debug(unclaimed.toString())
+
+      //bugFix: https://github.com/polkadot-js/api/issues/5859
+      //temporary solution
+      const chainName = (await this.api.rpc.system.chain()).toString().toLowerCase()
+      const unclaimedFixed = unclaimed.filter(x => {
+        switch (chainName) {
+          case "kusama":
+            return x>6513
+          case "polkadot":
+            return x>1419  
+          default:
+            return true
         }
-      }
-      validatorInfo.unclaimedPayouts=unclaimedPayouts
-  
-      return unclaimedPayouts    
+      })
+
+      validatorInfo.unclaimedPayouts=unclaimedFixed
+      return unclaimedFixed    
     }
 
     private async buildClaimPool(validatorsMap: ValidatorsMap): Promise<ClaimPool[]> {

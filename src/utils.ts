@@ -38,3 +38,7 @@ export const initKey = (keystoreFilePath: string, passwordFilePath): any =>{ //s
     process.exit(1)
   } else return keyPair
 }
+
+export const setDifference = <T>(setA: Set<T>, setB: Set<T>): Set<T> => {
+  return new Set([...setA].filter(x=>!setB.has(x)))
+}
