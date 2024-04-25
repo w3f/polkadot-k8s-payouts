@@ -145,9 +145,9 @@ export class Claimer {
       })
 
       const claimedIdx: Set<number> = new Set<number>
-      const stakingQuey = await this.api.derive.staking.query(validatorAddress,{withLedger:true, withClaimedRewardsEras: true})
-      stakingQuey.stakingLedger.legacyClaimedRewards.forEach(r=>claimedIdx.add(r.toNumber()))
-      stakingQuey.claimedRewardsEras.forEach(r=>claimedIdx.add(r.toNumber()))
+      const stakingQuery = await this.api.derive.staking.query(validatorAddress,{withLedger:true, withClaimedRewardsEras: true})
+      stakingQuery.stakingLedger.legacyClaimedRewards.forEach(r=>claimedIdx.add(r.toNumber()))
+      stakingQuery.claimedRewardsEras.forEach(r=>claimedIdx.add(r.toNumber()))
 
       const unclaimed: number[] = Array.from(setDifference(ownRewardsIdx,claimedIdx))
       this.logger.debug(unclaimed.toString())
