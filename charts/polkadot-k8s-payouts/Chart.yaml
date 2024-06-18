@@ -1,5 +1,5 @@
 description: Polkadot K8s Payouts
 name: polkadot-k8s-payouts
-version: v1.2.10
-appVersion: v1.2.10
+version: v1.2.11
+appVersion: v1.2.11
 apiVersion: v2
