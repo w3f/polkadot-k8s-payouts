@@ -21,7 +21,7 @@ config:
     enabled: false
   claim:
     enabled: false
-    batchSize: 4
+    batchSize: 3
     gracePeriod:
       enabled: false
       eras: 4
