@@ -145,9 +145,21 @@ export class Claimer {
       })
 
       const claimedIdx: Set<number> = new Set<number>
-      const stakingQuery = await this.api.derive.staking.query(validatorAddress,{withLedger:true, withClaimedRewardsEras: true})
-      stakingQuery.stakingLedger.legacyClaimedRewards.forEach(r=>claimedIdx.add(r.toNumber()))
-      stakingQuery.claimedRewardsEras.forEach(r=>claimedIdx.add(r.toNumber()))
+      
+      console.time("stakingQuery")
+      // const stakingQuery = await this.api.derive.staking.query(validatorAddress,{withLedger:true, withClaimedRewardsEras: false}) //withClaimedRewardsEras: true is heavy apparently => https://github.com/polkadot-js/api/issues/5923
+      // stakingQuery.stakingLedger.legacyClaimedRewards.forEach(r=>claimedIdx.add(r.toNumber()))
+      // stakingQuery.claimedRewardsEras.forEach(r=>claimedIdx.add(r.toNumber()))
+
+      //bypass to fix https://github.com/polkadot-js/api/issues/5923
+      for (const i of ownRewardsIdx) {
+        const tmp = await this.api.query.staking.claimedRewards(i,validatorAddress)
+        if(tmp.length){
+          claimedIdx.add(i)
+        }
+      }
+      console.timeEnd("stakingQuery")
+      
 
       const unclaimed: number[] = Array.from(setDifference(ownRewardsIdx,claimedIdx))
       this.logger.debug(unclaimed.toString())
