@@ -108,9 +108,11 @@ export class Claimer {
         
       }
   
+      console.time("gatherUnclaimedInfo")
       for (const [address, validatorInfo] of validatorsMap) {
         await this.gatherUnclaimedInfo(address,validatorInfo)
       }
+      console.timeEnd("gatherUnclaimedInfo")
   
       return validatorsMap
     }
@@ -146,7 +148,7 @@ export class Claimer {
 
       const claimedIdx: Set<number> = new Set<number>
       
-      console.time("stakingQuery")
+      // console.time("stakingQuery")
       // const stakingQuery = await this.api.derive.staking.query(validatorAddress,{withLedger:true, withClaimedRewardsEras: false}) //withClaimedRewardsEras: true is heavy apparently => https://github.com/polkadot-js/api/issues/5923
       // stakingQuery.stakingLedger.legacyClaimedRewards.forEach(r=>claimedIdx.add(r.toNumber()))
       // stakingQuery.claimedRewardsEras.forEach(r=>claimedIdx.add(r.toNumber()))
@@ -158,7 +160,7 @@ export class Claimer {
           claimedIdx.add(i)
         }
       }
-      console.timeEnd("stakingQuery")
+      // console.timeEnd("stakingQuery")
       
 
       const unclaimed: number[] = Array.from(setDifference(ownRewardsIdx,claimedIdx))
