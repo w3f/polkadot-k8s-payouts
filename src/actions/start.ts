@@ -6,6 +6,7 @@ import { LoggerSingleton } from '../logger';
 import { Claimer } from '../claimer';
 import { GitConfigLoaderFactory } from '../gitConfigLoader/gitConfigLoaderFactory';
 import { runAttempts } from '../constants';
+import { NotifierFactory } from '../notifier/NotifierFactory';
 
 const _loadConfig = async (config: any): Promise<InputConfig> =>{
     const cfg = new Config<InputConfig>().parse(config);
@@ -36,7 +37,9 @@ export async function startAction(cmd): Promise<void> {
 
     const api = await new Client(cfg).connect()
 
-    const claimer = new Claimer(cfg, api);
+    const notifier = await new NotifierFactory(cfg).makeNotifier()
+
+    const claimer = new Claimer(cfg, api, notifier);
 
     try {
         let leftAttemts = runAttempts

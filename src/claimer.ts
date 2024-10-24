@@ -1,4 +1,4 @@
-import { ClaimerInputConfig, Target, GracePeriod, ValidatorInfo, ValidatorsMap, ClaimPool } from './types';
+import { ClaimerInputConfig, Target, GracePeriod, ValidatorInfo, ValidatorsMap, ClaimPool, NewPayoutData } from './types';
 import { getActiveEraIndex, initKey, setDifference } from './utils';
 import { Logger, LoggerSingleton } from './logger';
 import { ApiPromise, Keyring } from '@polkadot/api';
@@ -7,6 +7,7 @@ import waitUntil from 'async-wait-until';
 import { BN } from 'bn.js';
 import { batchSize, claimAttempts, gracePeriod, isDeepCheckEnabled } from './constants';
 import { DeriveOwnExposure } from '@polkadot/api-derive/types';
+import { Notifier } from './notifier/INotifier';
 
 export class Claimer {
     private isDeepCheckEnabled = isDeepCheckEnabled
@@ -16,12 +17,14 @@ export class Claimer {
     private readonly logger: Logger = LoggerSingleton.getInstance()
     private currentEraIndex: number;
     private lastRewardMax: number;
+    private claimerAddress: string;
 
     private isFullSuccess = true;
 
     constructor(
         private readonly cfg: ClaimerInputConfig,
-        private readonly api: ApiPromise) {
+        private readonly api: ApiPromise,
+        private readonly notifier: Notifier) {
         cfg.targets.forEach(target=>this.targets.add(target))
         this.isDeepCheckEnabled = cfg.deepCheck.enabled
         this.gracePeriod = cfg.claim.gracePeriod
@@ -46,7 +49,8 @@ export class Claimer {
         if(this.cfg.claim.enabled) {
           this.logger.info(`Processing claims...`)
           const keyPair: KeyringPair = initKey(this.cfg.claim.claimerKeystore.filePath,this.cfg.claim.claimerKeystore.passwordPath);
-
+          this.claimerAddress = keyPair.address
+          
           const claimPool = await this.buildClaimPool(validatorsMap)
           await this.claim(keyPair,claimPool,validatorsMap)
         }
@@ -58,6 +62,7 @@ export class Claimer {
           this.logger.info(`${validatorInfo.alias}|${address}`)
           validatorInfo.unclaimedPayouts.length>0 ? this.logger.info(`To be claimed Payouts: ${validatorInfo.unclaimedPayouts.toString()}`) : {}
           validatorInfo.claimedPayouts.length>0 ? this.logger.info(`Claimed Payouts: ${validatorInfo.claimedPayouts.toString()}`) : {}
+          validatorInfo.claimedPayouts.length>0 ? await this._notifyNewPayout(address,validatorInfo) : {}
           this.logger.info(`**********`)
         }
 
@@ -268,6 +273,19 @@ export class Claimer {
           }
       }
       this.logger.info(`Claimed ${totClaimed} payouts`);
+    }
+
+    private _notifyNewPayout = async (address: string, info: ValidatorInfo): Promise<boolean> => {
+      this.logger.debug(`Delegating to the Notifier the New Payout notification...`)
+      const data: NewPayoutData = {
+        alias: info.alias,
+        address: address,
+        claimer: this.claimerAddress,
+        eras: info.claimedPayouts.toString(),
+        networkId: address.startsWith('1') ? 'polkadot' : 'kusama'
+      }
+      this.logger.debug(JSON.stringify(data))
+      return await this.notifier.newPayout(data)
     }
 
 }

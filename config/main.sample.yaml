@@ -15,6 +15,13 @@ targetsFromGit: #optional
       apiToken: xxx
     network: kusama
     url: https://your.gitlab.domain/api/v4/projects/number/repository/files/accounts.yaml/raw?ref=main  
+matrix: #optional
+  enabled: false
+  baseUrl: "https://matrix.org"
+  password: "xxx"
+  userId: "@bot:matrix.org"
+  room: "!xxx:matrix.org"
+  notifyRestarts: false
 targets: #optional  
 - alias: validator-000
     validatorAddress: "<validator-000-stash-address>"

@@ -39,6 +39,8 @@ spec:
               mountPath: {{ dir .Values.config.claim.claimerKeystore.passwordPath }} 
             - name: wallet
               mountPath: {{ dir .Values.config.claim.claimerKeystore.filePath }}   
+            - name: store
+              mountPath: /app/store   
           volumes:
           - name: config
             configMap:
@@ -54,4 +56,11 @@ spec:
               secretName: {{ .Release.Name }}-wallet
               items:
               - key: claimer_wallet_json
-                path: {{ base .Values.config.claim.claimerKeystore.filePath }}           
+                path: {{ base .Values.config.claim.claimerKeystore.filePath }}      
+          - name: store
+          {{ if and (ne .Values.config.environment "ci") (.Values.config.matrix.enabled) }} 
+            persistentVolumeClaim:
+              claimName: {{ .Release.Name }}-store
+          {{ else }}
+            emptyDir: {}     
+          {{ end }}             
