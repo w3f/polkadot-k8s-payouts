@@ -36,6 +36,25 @@ export interface ClaimerInputConfig {
 export interface InputConfig extends ClaimerInputConfig {
   wsEndpoint: string;
   logLevel: string;
+  matrix?: MatrixConfig;
+}
+
+export interface MatrixConfig {
+  enabled: boolean;
+  strategy?: "default";
+  baseUrl: string;
+  password: string;
+  userId: string;
+  room: string;
+  notifyRestarts?: boolean;
+}
+
+export interface NewPayoutData {
+  claimer: string;
+  alias: string;
+  networkId: string;
+  address: string;
+  eras: string;
 }
 
 export interface GracePeriod {

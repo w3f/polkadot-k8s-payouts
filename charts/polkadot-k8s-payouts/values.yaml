@@ -16,6 +16,13 @@ config:
   #       apiToken: xxx
   #     network: kusama
   #     url: https://github.com/w3f/1k-validators-be/raw/master/helmfile.d/config/kusama/otv-backend-prod.yaml.gotmpl
+  matrix: #optional
+    enabled: false
+    baseUrl: "https://matrix.org"
+    password: "xxx"
+    userId: "@bot:matrix.org"
+    room: "!xxx:matrix.org"
+    notifyRestarts: false
   targets: [] #optional
   deepCheck: 
     enabled: false
