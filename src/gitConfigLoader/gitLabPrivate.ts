@@ -4,6 +4,9 @@ import fs from 'fs';
 import { Config } from '@w3f/config';
 import { Target } from "../types";
 import { GitLabTarget, InputConfigFromGitLabPrivate } from "./types";
+import { ConfigVersion } from "../constants";
+import { ConfigAccountSettings, MonitoringGroup, Chain } from "@w3f/monitoring-types";
+import { ConfigProcessor } from "@w3f/monitoring-config";
 
 export class GitLabPrivate implements GitConfigLoader {
 
@@ -13,26 +16,36 @@ export class GitLabPrivate implements GitConfigLoader {
     protected readonly network: string
     ) { }
 
-  async downloadAndLoad(): Promise<Array<Target>> {
+  async downloadAndLoad(configVersion?: ConfigVersion): Promise<Array<Target>> {
     const response = await fetch(this.url, {
     headers: {
         'PRIVATE-TOKEN': this.apiToken
     }
     });
     const data = await response.text();
-    if(!response.ok) throw new Error("git config download probelm: " + data)
-
-    fs.writeFileSync("./tmp.yaml",data)
-    const cfg = new Config<InputConfigFromGitLabPrivate>().parse("./tmp.yaml");
-    fs.rmSync("./tmp.yaml")
+    if(!response.ok) throw new Error("git config download problem: " + data)
     
+    let configV1;
+    fs.writeFileSync("./tmp.yaml", data);
+    switch (configVersion) {
+      case ConfigVersion.V2:
+        const configV2 = ConfigProcessor.processConfigs(["./tmp.yaml"]);
+        configV1 = this.configV2toV1(configV2);
+        break;
+      case ConfigVersion.V1:
+      default:
+        configV1 = new Config<InputConfigFromGitLabPrivate>().parse("./tmp.yaml");
+        break;
+      }
+    fs.rmSync("./tmp.yaml");
+      
     let tmp: Array<GitLabTarget> = [];
     switch (this.network.toLowerCase()) {
       case "kusama":
-        tmp = cfg.Kusama
+        tmp = configV1.Kusama
         break;
       case "polkadot":
-        tmp = cfg.Polkadot
+        tmp = configV1.Polkadot
         break;
       default:
         throw new Error("unexpected configuration")
@@ -44,5 +57,23 @@ export class GitLabPrivate implements GitConfigLoader {
       } 
       return target
     })
+  }
+
+  configV2toV1(groups: MonitoringGroup[]): InputConfigFromGitLabPrivate {
+    const result: InputConfigFromGitLabPrivate = {
+      Kusama: [],
+      Polkadot: [],
+    };
+    for (const group of groups) {
+      if (group.chain !== Chain.Kusama && group.chain !== Chain.Polkadot) {
+        continue;
+      }
+      const targets = group.accounts.map((account: ConfigAccountSettings) => ({
+        name: account.name,
+        address: account.ss58,
+      }));
+      result[group.chain].push(...targets);
+    }
+    return result;
   }
 }

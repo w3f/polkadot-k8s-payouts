@@ -1,3 +1,5 @@
+import { ConfigVersion } from "./constants";
+
 export interface Keystore {
     filePath: string;
     passwordPath: string;
@@ -37,6 +39,7 @@ export interface InputConfig extends ClaimerInputConfig {
   wsEndpoint: string;
   logLevel: string;
   matrix?: MatrixConfig;
+  monitoringConfigVersion?: ConfigVersion;
 }
 
 export interface MatrixConfig {

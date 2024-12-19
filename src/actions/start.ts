@@ -5,16 +5,17 @@ import { InputConfig, Target } from '../types';
 import { LoggerSingleton } from '../logger';
 import { Claimer } from '../claimer';
 import { GitConfigLoaderFactory } from '../gitConfigLoader/gitConfigLoaderFactory';
-import { runAttempts } from '../constants';
+import { ConfigVersion, runAttempts } from '../constants';
 import { NotifierFactory } from '../notifier/NotifierFactory';
 
 const _loadConfig = async (config: any): Promise<InputConfig> =>{
     const cfg = new Config<InputConfig>().parse(config);
     const gitLoaders = new GitConfigLoaderFactory(cfg).makeGitConfigLoaders()
+    const configVersion = cfg.monitoringConfigVersion || ConfigVersion.V1
 
     const gitTargets: Array<Target> = []
     for (const l of gitLoaders) {
-        const t = await l.downloadAndLoad()
+        const t = await l.downloadAndLoad(configVersion)
         gitTargets.push(...t)
     }
 
