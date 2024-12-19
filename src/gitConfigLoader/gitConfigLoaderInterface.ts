@@ -1,6 +1,6 @@
-import { ConfigVersion } from "../constants";
+import { MonitoringConfigVersion } from "../constants";
 import { Target } from "../types";
 
 export interface GitConfigLoader {
-  downloadAndLoad(configVersion?: ConfigVersion): Promise<Array<Target>>;
+  downloadAndLoad(configVersion?: MonitoringConfigVersion): Promise<Array<Target>>;
 }

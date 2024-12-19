@@ -1,4 +1,4 @@
-import { ConfigVersion } from "./constants";
+import { MonitoringConfigVersion } from "./constants";
 
 export interface Keystore {
     filePath: string;
@@ -39,7 +39,7 @@ export interface InputConfig extends ClaimerInputConfig {
   wsEndpoint: string;
   logLevel: string;
   matrix?: MatrixConfig;
-  monitoringConfigVersion?: ConfigVersion;
+  monitoringConfigVersion?: MonitoringConfigVersion;
 }
 
 export interface MatrixConfig {

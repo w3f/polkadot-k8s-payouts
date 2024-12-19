@@ -5,7 +5,7 @@ import { InputConfig, Target } from '../types';
 import { LoggerSingleton } from '../logger';
 import { Claimer } from '../claimer';
 import { GitConfigLoaderFactory } from '../gitConfigLoader/gitConfigLoaderFactory';
-import { ConfigVersion, runAttempts } from '../constants';
+import { runAttempts } from '../constants';
 import { NotifierFactory } from '../notifier/NotifierFactory';
 
 const _loadConfig = async (config: any): Promise<InputConfig> =>{
