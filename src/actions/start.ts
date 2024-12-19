@@ -11,7 +11,7 @@ import { NotifierFactory } from '../notifier/NotifierFactory';
 const _loadConfig = async (config: any): Promise<InputConfig> =>{
     const cfg = new Config<InputConfig>().parse(config);
     const gitLoaders = new GitConfigLoaderFactory(cfg).makeGitConfigLoaders()
-    const configVersion = cfg.monitoringConfigVersion || ConfigVersion.V1
+    const configVersion = cfg.monitoringConfigVersion
 
     const gitTargets: Array<Target> = []
     for (const l of gitLoaders) {
