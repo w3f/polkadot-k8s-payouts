@@ -28,16 +28,18 @@ export class GitLabPrivate implements GitConfigLoader {
     let configV1;
     fs.writeFileSync("./tmp.yaml", data);
     switch (configVersion) {
-      case ConfigVersion.V2:
+      case ConfigVersion.V2: {
         const configV2 = ConfigProcessor.processConfigs(["./tmp.yaml"]);
         configV1 = this.configV2toV1(configV2);
         break;
+      }
       case ConfigVersion.V1:
-      default:
+      default: {
         configV1 = new Config<InputConfigFromGitLabPrivate>().parse("./tmp.yaml");
         break;
       }
-    fs.rmSync("./tmp.yaml");
+    }
+    fs.rmSync("./tmp.yaml");    
       
     let tmp: Array<GitLabTarget> = [];
     switch (this.network.toLowerCase()) {
