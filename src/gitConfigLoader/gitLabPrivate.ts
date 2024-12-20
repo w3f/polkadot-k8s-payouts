@@ -4,7 +4,7 @@ import fs from 'fs';
 import { Config } from '@w3f/config';
 import { Target } from "../types";
 import { GitLabTarget, InputConfigFromGitLabPrivate } from "./types";
-import { MonitoringConfigVersion } from "../constants";
+import { GitConfigVersion } from "../constants";
 import { ConfigAccountSettings, MonitoringGroup, Chain } from "@w3f/monitoring-types";
 import { ConfigProcessor } from "@w3f/monitoring-config";
 
@@ -13,10 +13,11 @@ export class GitLabPrivate implements GitConfigLoader {
   constructor(
     protected readonly url: string, 
     protected readonly apiToken: string, 
-    protected readonly network: string
+    protected readonly network: string,
+    protected readonly version: string
     ) { }
 
-  async downloadAndLoad(configVersion?: MonitoringConfigVersion): Promise<Array<Target>> {
+  async downloadAndLoad(): Promise<Array<Target>> {
     const response = await fetch(this.url, {
     headers: {
         'PRIVATE-TOKEN': this.apiToken
@@ -27,13 +28,13 @@ export class GitLabPrivate implements GitConfigLoader {
     
     let configV1;
     fs.writeFileSync("./tmp.yaml", data);
-    switch (configVersion) {
-      case MonitoringConfigVersion.V2: {
+    switch (this.version) {
+      case GitConfigVersion.V2: {
         const configV2 = ConfigProcessor.processConfigs(["./tmp.yaml"]);
         configV1 = this.configV2toV1(configV2);
         break;
       }
-      case MonitoringConfigVersion.V1:
+      case GitConfigVersion.V1:
       default: {
         configV1 = new Config<InputConfigFromGitLabPrivate>().parse("./tmp.yaml");
         break;

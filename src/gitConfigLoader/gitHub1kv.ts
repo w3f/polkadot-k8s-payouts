@@ -6,7 +6,8 @@ import { TargetFromGit1kv } from "./types";
 export class GitHub1kv implements GitConfigLoader {
 
   constructor(
-    protected readonly url: string
+    protected readonly url: string,
+    protected readonly version: string
     ) { }
 
   async downloadAndLoad(): Promise<Array<Target>> {
