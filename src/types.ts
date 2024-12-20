@@ -1,3 +1,5 @@
+import { GitConfigVersion } from "./constants";
+
 export interface Keystore {
     filePath: string;
     passwordPath: string;
@@ -21,6 +23,7 @@ export interface ClaimerInputConfig {
     };
     targetsFromGit?: {
       enabled: boolean;
+      configVersion?: GitConfigVersion;
       targets: Array<{
         platform: string;
         private: {
