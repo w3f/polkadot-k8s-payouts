@@ -5,7 +5,7 @@ import { Config } from '@w3f/config';
 import { Target } from "../types";
 import { GitLabTarget, InputConfigFromGitLabPrivate } from "./types";
 import { MonitoringConfigVersion } from "../constants";
-import { ConfigAccountSettings, MonitoringGroup, Chain } from "@w3f/monitoring-types";
+import { ConfigAccountSettings, MonitoringGroup, Chain, MonitorType, ValidatorSettings, MonitorSettings } from "@w3f/monitoring-types";
 import { ConfigProcessor } from "@w3f/monitoring-config";
 
 export class GitLabPrivate implements GitConfigLoader {
@@ -70,10 +70,22 @@ export class GitLabPrivate implements GitConfigLoader {
       if (group.chain !== Chain.Kusama && group.chain !== Chain.Polkadot) {
         continue;
       }
-      const targets = group.accounts.map((account: ConfigAccountSettings) => ({
-        name: account.name,
-        address: account.ss58,
-      }));
+      const hasValidatorMonitor = group.monitors.some(
+        monitor => monitor.name === MonitorType.Validator
+      );
+      if (!hasValidatorMonitor) {
+        continue;
+      }
+  
+      const targets = group.accounts
+        .filter((account: ConfigAccountSettings) => {
+          const validatorSettings = account[MonitorType.Validator] as MonitorSettings<MonitorType.Validator>;
+          return validatorSettings?.enablePayout === true;
+        })
+        .map((account: ConfigAccountSettings) => ({
+          name: account.name,
+          address: account.ss58,
+        }));
       result[group.chain].push(...targets);
     }
     return result;
