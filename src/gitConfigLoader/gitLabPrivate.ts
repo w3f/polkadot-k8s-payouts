@@ -4,8 +4,8 @@ import fs from 'fs';
 import { Config } from '@w3f/config';
 import { Target } from "../types";
 import { GitLabTarget, InputConfigFromGitLabPrivate } from "./types";
-import { MonitoringConfigVersion } from "../constants";
-import { ConfigAccountSettings, MonitoringGroup, Chain, MonitorType, ValidatorSettings, MonitorSettings } from "@w3f/monitoring-types";
+import { GitConfigVersion } from "../constants";
+import { ConfigAccountSettings, MonitoringGroup, Chain } from "@w3f/monitoring-types";
 import { ConfigProcessor } from "@w3f/monitoring-config";
 
 export class GitLabPrivate implements GitConfigLoader {
@@ -13,10 +13,11 @@ export class GitLabPrivate implements GitConfigLoader {
   constructor(
     protected readonly url: string, 
     protected readonly apiToken: string, 
-    protected readonly network: string
+    protected readonly network: string,
+    protected readonly version: GitConfigVersion
     ) { }
 
-  async downloadAndLoad(configVersion?: MonitoringConfigVersion): Promise<Array<Target>> {
+  async downloadAndLoad(): Promise<Array<Target>> {
     const response = await fetch(this.url, {
     headers: {
         'PRIVATE-TOKEN': this.apiToken
@@ -27,13 +28,13 @@ export class GitLabPrivate implements GitConfigLoader {
     
     let configV1;
     fs.writeFileSync("./tmp.yaml", data);
-    switch (configVersion) {
-      case MonitoringConfigVersion.V2: {
+    switch (this.version) {
+      case GitConfigVersion.V2: {
         const configV2 = ConfigProcessor.processConfigs(["./tmp.yaml"]);
         configV1 = this.configV2toV1(configV2);
         break;
       }
-      case MonitoringConfigVersion.V1:
+      case GitConfigVersion.V1:
       default: {
         configV1 = new Config<InputConfigFromGitLabPrivate>().parse("./tmp.yaml");
         break;
@@ -70,22 +71,13 @@ export class GitLabPrivate implements GitConfigLoader {
       if (group.chain !== Chain.Kusama && group.chain !== Chain.Polkadot) {
         continue;
       }
-      const hasValidatorMonitor = group.monitors.some(
-        monitor => monitor.name === MonitorType.Validator
-      );
-      if (!hasValidatorMonitor) {
+      if (!group.enablePayout) {
         continue;
       }
-  
-      const targets = group.accounts
-        .filter((account: ConfigAccountSettings) => {
-          const validatorSettings = account[MonitorType.Validator] as MonitorSettings<MonitorType.Validator>;
-          return validatorSettings?.enablePayout === true;
-        })
-        .map((account: ConfigAccountSettings) => ({
-          name: account.name,
-          address: account.ss58,
-        }));
+      const targets = group.accounts.map((account: ConfigAccountSettings) => ({
+        name: account.name,
+        address: account.ss58,
+      }));
       result[group.chain].push(...targets);
     }
     return result;

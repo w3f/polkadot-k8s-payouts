@@ -2131,19 +2131,27 @@
   dependencies:
     winston "^3.3.3"
 
-"@w3f/monitoring-config@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@w3f/monitoring-config/-/monitoring-config-0.0.5.tgz#c1ddd1d6d03ffa109bf991cf078eadb8d1eea928"
-  integrity sha512-emhpsuq57SThYoiVlz8h2Ln6bKTPEPMQ8O3AbUc5Rx4dpBrobCLo61te9m2nwqiq0qX5f9LN3nxlWLj9SfP6oQ==
+"@w3f/monitoring-config@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@w3f/monitoring-config/-/monitoring-config-0.0.6.tgz#be9019882f7574b74bfc11e160a59d81191638ae"
+  integrity sha512-wU2m41XUFVJdtmlOMYivZRlIjhGo/RVtdEdFowXQAPGJNWJeZl5KnyjH8q6e5rcbwFPtNBPHdVVj/MJJd8M8ag==
   dependencies:
     "@w3f/monitoring-types" "0.0.3"
     joi "^17.13.3"
     js-yaml "^4.1.0"
 
-"@w3f/monitoring-types@0.0.3", "@w3f/monitoring-types@^0.0.3":
+"@w3f/monitoring-types@0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@w3f/monitoring-types/-/monitoring-types-0.0.3.tgz#89482df225d088a2cd433bc014cb7d9471e216e7"
   integrity sha512-FQPQaKXdntBquPhqNcR26L6Zb247HflaqJ3M2V3u7zUw4esuBRN4VxT3U1wiZx2qbx2+wNN67YwJJo2kFb6PAQ==
+  dependencies:
+    "@polkadot/api-augment" "^12.4.2"
+    "@polkadot/types" "^12.4.2"
+
+"@w3f/monitoring-types@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@w3f/monitoring-types/-/monitoring-types-0.0.4.tgz#de9d605114f137b49ff967c91eca5b584ae74475"
+  integrity sha512-bWRTLe6SLv9LRUbIqa/Q2LhH9JGwwefFE0JyszRTTmEbAdOZxp9l9mClBWOm3/7MFxHom1b50LebTdaPzbHp+g==
   dependencies:
     "@polkadot/api-augment" "^12.4.2"
     "@polkadot/types" "^12.4.2"

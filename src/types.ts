@@ -1,4 +1,4 @@
-import { MonitoringConfigVersion } from "./constants";
+import { GitConfigVersion } from "./constants";
 
 export interface Keystore {
     filePath: string;
@@ -23,6 +23,7 @@ export interface ClaimerInputConfig {
     };
     targetsFromGit?: {
       enabled: boolean;
+      configVersion?: GitConfigVersion;
       targets: Array<{
         platform: string;
         private: {
@@ -39,7 +40,6 @@ export interface InputConfig extends ClaimerInputConfig {
   wsEndpoint: string;
   logLevel: string;
   matrix?: MatrixConfig;
-  monitoringConfigVersion?: MonitoringConfigVersion;
 }
 
 export interface MatrixConfig {

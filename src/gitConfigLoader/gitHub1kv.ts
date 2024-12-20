@@ -2,11 +2,13 @@ import { GitConfigLoader } from "./gitConfigLoaderInterface";
 import fetch from 'node-fetch';
 import { Target } from "../types";
 import { TargetFromGit1kv } from "./types";
+import { GitConfigVersion } from "../constants";
 
 export class GitHub1kv implements GitConfigLoader {
 
   constructor(
-    protected readonly url: string
+    protected readonly url: string,
+    protected readonly version: GitConfigVersion
     ) { }
 
   async downloadAndLoad(): Promise<Array<Target>> {
