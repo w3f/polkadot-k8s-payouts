@@ -10,10 +10,11 @@ export class GitConfigLoaderFactory {
   makeGitConfigLoaders = (): Array<GitConfigLoader> => {
 
     const gitConfig = this.cfg.targetsFromGit
-    const version = gitConfig.configVersion ? gitConfig.configVersion : GitConfigVersion.V1
-
+    
     if(!gitConfig?.enabled)
       return [new Disabled()]
+
+    const version = gitConfig?.configVersion ? gitConfig.configVersion : GitConfigVersion.V1
 
     const result: Array<GitConfigLoader> = []
     for (const target of gitConfig.targets) {
