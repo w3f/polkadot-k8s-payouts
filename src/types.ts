@@ -8,10 +8,15 @@ export interface Keystore {
 export interface Target {
   alias: string;
   validatorAddress: string;
+  tag?: string;
 }
 
 export interface ClaimerInputConfig {
     targets?: Array<Target>;
+    filterByTag?: {
+      enabled: boolean;
+      tag?: string;
+    };
     deepCheck: {
       enabled: boolean;
     };

@@ -23,7 +23,9 @@ const _loadConfig = async (config: any): Promise<InputConfig> =>{
     const filteredArr = [...cfg.targets,...gitTargets].filter(el=>{ //priority given to locals over downloaded ones
         const isDuplicate = seen.has(el.alias);
         seen.add(el.alias)
-        return !isDuplicate
+
+        const isTagMatch =  (!cfg.filterByTag?.enabled) || (el.tag && cfg.filterByTag.tag == el.tag)
+        return !isDuplicate && isTagMatch
     })
     cfg.targets = filteredArr
     return cfg
