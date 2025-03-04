@@ -22,9 +22,13 @@ matrix: #optional
   userId: "@bot:matrix.org"
   room: "!xxx:matrix.org"
   notifyRestarts: false
+filterByTag: #optional
+  enabled: true
+  tag: "group1"
 targets: #optional  
 - alias: validator-000
-    validatorAddress: "<validator-000-stash-address>"
+  validatorAddress: "<validator-000-stash-address>"
+  tag: "group1"
 - alias: validator-001
   validatorAddress: "<validator-001-stash-address>"
 deepCheck:

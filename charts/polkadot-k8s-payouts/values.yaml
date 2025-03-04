@@ -23,6 +23,8 @@ config:
     userId: "@bot:matrix.org"
     room: "!xxx:matrix.org"
     notifyRestarts: false
+  filterByTag:
+    enabled: false  
   targets: [] #optional
   deepCheck: 
     enabled: false

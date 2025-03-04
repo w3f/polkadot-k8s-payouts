@@ -9,6 +9,7 @@ export interface TargetFromGit1kv {
 export interface GitLabTarget {
   name: string;
   address: string;
+  tag?: string; 
 }
 
 export interface InputConfigFromGitLabPrivate {

@@ -56,7 +56,8 @@ export class GitLabPrivate implements GitConfigLoader {
     return tmp.map(t=>{
       const target: Target = {
         alias: t.name,
-        validatorAddress: t.address
+        validatorAddress: t.address,
+        tag: t.tag
       } 
       return target
     })
