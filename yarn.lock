@@ -1948,10 +1948,10 @@
   dependencies:
     winston "^3.3.3"
 
-"@w3f/monitoring-config@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@w3f/monitoring-config/-/monitoring-config-0.1.9.tgz#a8942bda94b3fa69fab720a033d232e922228099"
-  integrity sha512-mNfTf1hLwrm/cboX+Wi0Kem2Q1Rj5vFE/FQZTJwpJjyRbreC5F5uM3G4pSiBdmA43EaW7ZSsm+5Ypec3Dk3mdQ==
+"@w3f/monitoring-config@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@w3f/monitoring-config/-/monitoring-config-0.1.10.tgz#c1f91821479a3b227633d715042406da038e276a"
+  integrity sha512-N722f84CI/cGBPce1pqHry4JuOEOgfMlS03UFRnckyvsejQEqaw6wawfPKdnazBwWmzCvvUJgM+xWa7pH7tFIg==
   dependencies:
     "@polkadot/util" "^13.5.2"
     "@polkadot/util-crypto" "^13.5.2"
