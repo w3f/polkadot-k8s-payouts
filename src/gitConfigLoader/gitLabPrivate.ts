@@ -5,7 +5,7 @@ import { Config } from '@w3f/config';
 import { Target } from "../types";
 import { GitLabTarget, InputConfigFromGitLabPrivate } from "./types";
 import { GitConfigVersion } from "../constants";
-import { ConfigAccountSettings, MonitoringGroup, Chain } from "@w3f/monitoring-types";
+import { ConfigAccountSettings, MonitoringGroup, Chain, MonitorType } from "@w3f/monitoring-types";
 import { ConfigProcessor } from "@w3f/monitoring-config";
 
 export class GitLabPrivate implements GitConfigLoader {
@@ -72,12 +72,13 @@ export class GitLabPrivate implements GitConfigLoader {
       if (group.chain !== Chain.Kusama && group.chain !== Chain.Polkadot) {
         continue;
       }
-      if (!group.enablePayout) {
+      if (!group?.annotations?.enablePayout) {
         continue;
       }
       const targets = group.accounts.map((account: ConfigAccountSettings) => ({
         name: account.name,
         address: account.ss58,
+        tag: account[MonitorType.Staking]?.annotations?.tag
       }));
       result[group.chain].push(...targets);
     }
