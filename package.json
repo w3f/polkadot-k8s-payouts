@@ -1,6 +1,6 @@
 {
   "name": "polkadot-payouts",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Automated transfers among accounts",
   "repository": "git@github.com:w3f/accountant.git",
   "author": "W3F Infrastructure Team <devops@web3.foundation>",
