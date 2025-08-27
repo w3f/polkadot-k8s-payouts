@@ -78,7 +78,7 @@ export class Claimer {
     private async filterTargets(): Promise<void> {
       const bonded = await this.api.query.staking.bonded.multi(Array.from(this.targets).map(target=>target.validatorAddress))
       Array.from(this.targets).forEach((target,index) => {
-        if(!bonded[index].isSome){
+        if(bonded[index].isEmpty){
           this.logger.warn(`${target.alias} (${target.validatorAddress}) cannot be processed, it's not bonded`)
           this.targets.delete(target)
         }
@@ -161,7 +161,7 @@ export class Claimer {
       //bypass to fix https://github.com/polkadot-js/api/issues/5923
       for (const i of ownRewardsIdx) {
         const tmp = await this.api.query.staking.claimedRewards(i,validatorAddress)
-        if(tmp.length){
+        if((tmp as any).length > 0){
           claimedIdx.add(i)
         }
       }
