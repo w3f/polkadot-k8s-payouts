@@ -15,6 +15,8 @@ export interface GitLabTarget {
 export interface InputConfigFromGitLabPrivate {
   Kusama: Array<GitLabTarget>;
   Polkadot: Array<GitLabTarget>;
+  AssetHubPolkadot: Array<GitLabTarget>;
+  AssetHubKusama: Array<GitLabTarget>;
 }
 
 /*********************/
