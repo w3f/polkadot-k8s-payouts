@@ -50,6 +50,12 @@ export class GitLabPrivate implements GitConfigLoader {
       case "polkadot":
         tmp = configV1.Polkadot
         break;
+      case "assethubkusama":
+        tmp = configV1.AssetHubKusama
+        break;
+      case "assethubpolkadot":
+        tmp = configV1.AssetHubPolkadot
+        break;
       default:
         throw new Error("unexpected configuration")
     }
@@ -67,9 +73,11 @@ export class GitLabPrivate implements GitConfigLoader {
     const result: InputConfigFromGitLabPrivate = {
       Kusama: [],
       Polkadot: [],
+      AssetHubKusama: [],
+      AssetHubPolkadot: [],
     };
     for (const group of groups) {
-      if (group.chain !== Chain.Kusama && group.chain !== Chain.Polkadot) {
+      if (group.chain !== Chain.AssetHubKusama && group.chain !== Chain.AssetHubPolkadot && group.chain !== Chain.Polkadot) {
         continue;
       }
       if (!group?.annotations?.enablePayout) {

@@ -86,7 +86,7 @@ export class Claimer {
 
       const chain = (await this.api.rpc.system.chain()).toHuman()
       const keyring = new Keyring();
-      chain.toLowerCase() == "kusama" ? keyring.setSS58Format(2) : keyring.setSS58Format(0) //0 Polkadot, 2 Kusama
+      chain.toLowerCase().includes("kusama") ? keyring.setSS58Format(2) : keyring.setSS58Format(0) //0 Polkadot, 2 Kusama
       Array.from(this.targets).forEach((target,index) => {
         const keypair = keyring.addFromAddress(target.validatorAddress)
         target.validatorAddress = keypair.address //conversion
@@ -175,15 +175,14 @@ export class Claimer {
       //temporary solution
       const chainName = (await this.api.rpc.system.chain()).toString().toLowerCase()
       const unclaimedFixed = unclaimed.filter(x => {
-        switch (chainName) {
-          case "kusama":
-            return x>6513
-          case "polkadot":
-            return x>1419  
-          default:
-            return true
+        if (chainName.includes("kusama")) {
+          return x > 6513;
+        } else if (chainName.includes("polkadot")) {
+          return x > 1419;
+        } else {
+          return true;
         }
-      })
+      });
 
       validatorInfo.unclaimedPayouts=unclaimedFixed
       return unclaimedFixed    
