@@ -1,6 +1,6 @@
 {
   "name": "polkadot-payouts",
-  "version": "1.4.4",
+  "version": "1.4.6",
   "description": "Automated transfers among accounts",
   "repository": "git@github.com:w3f/accountant.git",
   "author": "W3F Infrastructure Team <devops@web3.foundation>",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@matrix-org/olm": "https://gitlab.matrix.org/matrix-org/olm/-/package_files/2572/download",
-    "@polkadot/api": "^16.4.4",
+    "@polkadot/api": "^16.4.8",
     "@w3f/config": "^0.1.1",
     "@w3f/logger": "^0.4.3",
     "@w3f/monitoring-config": "^0.1.13",
@@ -52,7 +52,7 @@
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "resolutions": {
-    "@polkadot/util": "13.5.5",
-    "@polkadot/util-crypto": "13.5.5"
+    "@polkadot/util": "13.5.6",
+    "@polkadot/util-crypto": "13.5.6"
   }
 }
