@@ -5,18 +5,16 @@ import { ApiPromise, Keyring } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import waitUntil from 'async-wait-until';
 import { BN } from 'bn.js';
-import { batchSize, claimAttempts, gracePeriod, isDeepCheckEnabled } from './constants';
+import { batchSize, claimAttempts, gracePeriod } from './constants';
 import { DeriveOwnExposure } from '@polkadot/api-derive/types';
 import { Notifier } from './notifier/INotifier';
 
 export class Claimer {
-    private isDeepCheckEnabled = isDeepCheckEnabled
     private gracePeriod: GracePeriod = gracePeriod;
     private batchSize: number = batchSize;
     private targets: Set<Target> = new Set<Target>();
     private readonly logger: Logger = LoggerSingleton.getInstance()
     private currentEraIndex: number;
-    private lastRewardMax: number;
     private claimerAddress: string;
 
     private isFullSuccess = true;
@@ -26,7 +24,6 @@ export class Claimer {
         private readonly api: ApiPromise,
         private readonly notifier: Notifier) {
         cfg.targets.forEach(target=>this.targets.add(target))
-        this.isDeepCheckEnabled = cfg.deepCheck.enabled
         this.gracePeriod = cfg.claim.gracePeriod
         this.batchSize = cfg.claim.batchSize
     }
@@ -71,8 +68,6 @@ export class Claimer {
 
     private async initInstanceVariables(): Promise<void>{
       this.currentEraIndex = await getActiveEraIndex(this.api);
-      this.lastRewardMax = Number(this.api.consts.staking.historyDepth?.toString())
-      if(!this.lastRewardMax) this.lastRewardMax = 84 //Polkadot runtime is not ready for this call
     }
 
     private async filterTargets(): Promise<void> {
@@ -97,21 +92,8 @@ export class Claimer {
 
       const validatorsMap: ValidatorsMap = new Map<string,ValidatorInfo>()
       accounts.forEach(account=>{
-        validatorsMap.set(account.validatorAddress,{lastReward:null,alias:account.alias,unclaimedPayouts:[],claimedPayouts:[]})
+        validatorsMap.set(account.validatorAddress,{alias:account.alias,unclaimedPayouts:[],claimedPayouts:[]})
       })
-  
-      const validators = (await this.api.derive.staking.accounts(accounts.map(account=>account.validatorAddress),{withLedger:true})).filter(validator=>validatorsMap.has(validator.accountId.toHuman()))
-
-      for (const validator of validators) {
-        const key = validator.accountId.toHuman()
-        const ledger = validator.stakingLedger
-        if (!ledger) {
-          throw new Error(`Could not get ledger for ${key}`);
-        }      
-        const lastReward: number = await this.getLastReward(key)
-        validatorsMap.set(key,{...validatorsMap.get(key),lastReward})
-        
-      }
   
       console.time("gatherUnclaimedInfo")
       for (const [address, validatorInfo] of validatorsMap) {
@@ -123,27 +105,7 @@ export class Claimer {
     }
 
 
-    private async getLastReward(validatorAddress: string): Promise<number> {
-
-      if(this.isDeepCheckEnabled) return this.lastRewardMax
-
-      const ledger = (await this.api.derive.staking.account(validatorAddress)).stakingLedger
-      if (!ledger) {
-          throw new Error(`Could not get ledger for ${validatorAddress}`);
-      }
-      let lastReward: number;
-      if ( ledger.legacyClaimedRewards.length == 0 ) {
-          lastReward = this.lastRewardMax
-      } else {
-          lastReward = ledger.legacyClaimedRewards.pop().toNumber();
-      }
-  
-      return lastReward
-    }
-
-
     private async gatherUnclaimedInfo(validatorAddress: string, validatorInfo: ValidatorInfo): Promise<number[]> {
-      
       const ownRewardsIdx: Set<number> = new Set<number>
       const exposure: DeriveOwnExposure[] = await this.api.derive.staking.ownExposures(validatorAddress)
       exposure.forEach(e=>{

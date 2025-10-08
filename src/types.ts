@@ -73,7 +73,6 @@ export interface GracePeriod {
 export type ValidatorsMap = Map<string,ValidatorInfo>
 
 export interface ValidatorInfo {
-  lastReward: number;
   alias: string;
   unclaimedPayouts?: number[];
   claimedPayouts?: number[];
@@ -83,4 +82,3 @@ export interface ClaimPool {
   address: string; 
   eraIndex: number;
 }
-
