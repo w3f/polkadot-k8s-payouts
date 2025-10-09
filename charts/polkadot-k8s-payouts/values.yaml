@@ -6,7 +6,7 @@ image:
 
 config:
   logLevel: info
-  wsEndpoint: "wss://kusama-rpc.polkadot.io/"
+  wsEndpoint: "wss://kusama-asset-hub-rpc.polkadot.io/"
   # targetsFromGit: #optional
   #   enabled: false
   #   targets:
