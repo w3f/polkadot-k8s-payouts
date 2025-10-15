@@ -1821,22 +1821,22 @@
   dependencies:
     winston "^3.3.3"
 
-"@w3f/monitoring-config@^0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@w3f/monitoring-config/-/monitoring-config-0.1.14.tgz#b126458142c4fd84d71fd2c2cf98a0d68e9bfd28"
-  integrity sha512-NeQ3wa2U+qcfTA1S1RWJ2te6juNjlqt5RvDhoFhaaf57RTxE5CAtJg0SpdjJ2tVDlX/woPKNfa/ad7OLgRh0SA==
+"@w3f/monitoring-config@^0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@w3f/monitoring-config/-/monitoring-config-0.1.15.tgz#ce7561897698fb0efd16c6ca2ced41863531c6b4"
+  integrity sha512-PLd//r1CsYnQozeg8uGeKMLTDoo56LOYrnDRBJW3yXXqEjKllAuqWEMjT6ySFWpKdRUQfzsfAUYNRES7uROUGQ==
   dependencies:
     "@polkadot/util" "^13.5.6"
     "@polkadot/util-crypto" "^13.5.6"
-    "@w3f/monitoring-types" "0.1.9"
+    "@w3f/monitoring-types" "0.1.10"
     axios "^1.7.7"
     joi "^17.13.3"
     js-yaml "^4.1.0"
 
-"@w3f/monitoring-types@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@w3f/monitoring-types/-/monitoring-types-0.1.9.tgz#3b39ffe639086d2f8525131e73a9583273ef9ebc"
-  integrity sha512-ApxtBhcZFI+KP/7zs7Xg6JKIMxAxY0k4auTnExmp/BlrQZJrks5EvnYMhTlKC4kbsZm7WsPkNwrBmHICiMjafg==
+"@w3f/monitoring-types@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@w3f/monitoring-types/-/monitoring-types-0.1.10.tgz#3b38625f66d8090c598b37d25a544611dca92622"
+  integrity sha512-E4Oivd1yRvoYbfhvY36hmtqDjudJva8QyXevLX6CsvyhHkGuF/mj0KwHS/PCP21XgEk7ZF97C3BGpBz9ozzFSg==
   dependencies:
     "@polkadot/api-augment" "^16.4.8"
     "@polkadot/types" "^16.4.8"
