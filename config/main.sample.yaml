@@ -14,7 +14,13 @@ targetsFromGit: #optional
       enabled: false
       apiToken: xxx
     network: kusama
-    url: https://your.gitlab.domain/api/v4/projects/number/repository/files/accounts.yaml/raw?ref=main  
+    url: https://your.gitlab.domain/api/v4/projects/number/repository/files/accounts.yaml/raw?ref=main
+  - platform: github # private repo via raw.githubusercontent.com + a PAT (Bearer auth)
+    private:
+      enabled: false
+      apiToken: ghp_xxx # classic PAT with `repo`, or fine-grained with `contents:read`
+    network: kusama
+    url: https://raw.githubusercontent.com/owner/repo/main/accounts.yaml
 matrix: #optional
   enabled: false
   baseUrl: "https://matrix.org"

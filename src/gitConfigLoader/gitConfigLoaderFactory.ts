@@ -2,6 +2,7 @@ import { InputConfig } from "../types"
 import { Disabled } from "./disabled"
 import { GitConfigLoader } from "./gitConfigLoaderInterface"
 import { GitHub1kv } from "./gitHub1kv"
+import { GitHubPrivate } from "./gitHubPrivate"
 import { GitLabPrivate } from "./gitLabPrivate"
 import { GitConfigVersion } from "../constants"
 
@@ -25,6 +26,9 @@ export class GitConfigLoaderFactory {
           break;
         case "gitlab":
           result.push(new GitLabPrivate(target.url,target.private.apiToken,target.network,version))
+          break;
+        case "github":
+          result.push(new GitHubPrivate(target.url,target.private.apiToken,target.network,version))
           break;
         default:
           result.push(new Disabled())

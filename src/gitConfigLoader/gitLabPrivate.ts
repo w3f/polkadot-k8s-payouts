@@ -17,11 +17,13 @@ export class GitLabPrivate implements GitConfigLoader {
     protected readonly version: GitConfigVersion
     ) { }
 
+  protected authHeaders(): Record<string, string> {
+    return { 'PRIVATE-TOKEN': this.apiToken };
+  }
+
   async downloadAndLoad(): Promise<Array<Target>> {
     const response = await fetch(this.url, {
-    headers: {
-        'PRIVATE-TOKEN': this.apiToken
-    }
+      headers: this.authHeaders()
     });
     const data = await response.text();
     if(!response.ok) throw new Error("git config download problem: " + data)
